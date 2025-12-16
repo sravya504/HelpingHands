@@ -1,7 +1,7 @@
 /* Base Styles */
 body {
   margin: 0;
-  font-family: 'Lato', sans-serif;
+ font-family: 'Poppins', sans-serif !important;
   background-color: #fdfbfb;
   color: #333;
   

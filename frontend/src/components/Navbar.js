@@ -184,7 +184,7 @@
 // }
 
 
-
+import "./Navbar.css"
 import { Link, useLocation } from "react-router-dom";
 import { useState } from "react";
 
@@ -195,6 +195,18 @@ export default function Navbar() {
   const isAdminPage = location.pathname.startsWith("/admin");
 
   const toggleMenu = () => setOpen(!open);
+  const navLinks = document.querySelectorAll(".nav-link");
+
+navLinks.forEach(link => {
+  link.addEventListener("click", () => {
+    // remove active class from all links
+    navLinks.forEach(l => l.classList.remove("active"));
+
+    // add active class to clicked link
+    link.classList.add("active");
+  });
+});
+
 
   return (
     <nav className="navbar p-0" style={{ backgroundColor: "maroon" }}>
@@ -271,7 +283,7 @@ export default function Navbar() {
           <ul className="navbar-nav d-flex flex-column flex-md-row justify-content-between align-items-center w-100 flex-wrap
         px-5">
             <li className="nav-item mx-2 my-1">
-              <Link className="nav-link fw-bold" style={{ color: "maroon" }} to="/">Home</Link>
+              <Link className="nav-link fw-bold active" style={{ color: "maroon" }} to="/">Home</Link>
             </li>
             <li className="nav-item mx-2 my-1">
               <Link className="nav-link fw-bold" style={{ color: "maroon" }} to="/about">About Us</Link>
