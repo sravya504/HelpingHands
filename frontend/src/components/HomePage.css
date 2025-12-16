@@ -473,7 +473,7 @@ ease-in-out !important;}
 
 .card-body {
   text-align: center;
-  font-style: italic;
+  /* font-style: italic; */
 }
 
 .arrow-btn {

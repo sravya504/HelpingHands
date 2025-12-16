@@ -5,14 +5,14 @@ export default function AboutUs() {
   const about_2 = [
     {
       image: "/images/about_us_1.png",
-      bg_clr: "#ffae52",
+      bg_clr: "#f19bb3ff",
       h1_clr: "#9f1239",
       heading: "Evolution",
       matter: "Every journey starts with a single step. A student of RGUKT-Nuzvid initiated their journey of service in 2009 by establishing a foundation, Helping Hands. The pupil with social responsibility,noble thoughts, and commitment towards society has evidently proven the strength of a rupee. It mainly focuses on the well-being of the students from the poor background on the campus.This has set a new beginning for many students to let their grievances from their lives and stood as an inspiration to upcoming generations.",
     },
     {
       image: "/images/about_us_2.png",
-      bg_clr: "#eb8aeb",
+      bg_clr: "#aeabeeff",
       h1_clr: "#4f46e5",
       heading: "Vision",
       matter: " We, the students of RGUKT-NUZVID, embark on a path with a single  destination that leads to one aspiration - build a better society. Leadership Skills and Social Responsibility are considered to be paramount. Community service enriches students' interpersonal skills and helps them evolve into active and real citizens responsible for more community building initiatives. We will persist in our service, remaining mindful of our vision and staying true to our motto."
@@ -296,10 +296,10 @@ export default function AboutUs() {
           ORGANS OF SOCIETY
         </h2>
         <img
-          src="/images/org.png"
+          src="/images/hhlogo.png"
           alt=""
-          height="150px"
-          width="150px"
+          height="100px"
+          width="100px"
           className="d-block mx-auto"
         />
         <h2
@@ -351,7 +351,7 @@ export default function AboutUs() {
       </section>
       <section className="selection d-flex flex-column  rounded" style={{marginBottom: "clamp(1rem, 5vw, 4rem)"}}>
         <img
-          src="/images/volunteer.png"
+          src="/images/hhlogo.png"
           alt=""
           height="100"
           width="100"

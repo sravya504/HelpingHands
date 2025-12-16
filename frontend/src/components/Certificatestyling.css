@@ -71,7 +71,7 @@
 /* Desktop styles remain unchanged */
 body {
   background-color: #f7f7f7;
-  font-family: Arial, sans-serif;
+  font-family: 'Poppins', sans-serif !important;
   display: flex;
   justify-content: center;
   align-items: center;
