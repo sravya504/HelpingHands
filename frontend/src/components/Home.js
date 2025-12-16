@@ -74,6 +74,16 @@ const recoginitions = [
     }
 ]
    
+const chunkArray = (arr, size) => {
+  const chunks = [];
+  for (let i = 0; i < arr.length; i += size) {
+    chunks.push(arr.slice(i, i + size));
+  }
+  return chunks;
+};
+
+const recognitionSlides = chunkArray(recoginitions, 3);
+
   
   
 
@@ -175,7 +185,9 @@ const recoginitions = [
 </div>
        
         </section>
-     <section className="recognitions">
+
+
+     {/* <section className="recognitions">
         <h3 className="text-center" style={{color:"#7f1d1d"}}>Recognitions</h3>
          <div className="card-group">
              {
@@ -192,9 +204,85 @@ const recoginitions = [
                     )
                 })
             }</div>
-       
-       
-        </section>
+        </section> */}
+
+<section className="recognitions py-5">
+  <h3 className="text-center mb-4" style={{ color: "#7f1d1d" }}>
+    Recognitions
+  </h3>
+
+  <div className="container position-relative">
+
+    {/* ◀ LEFT BUTTON (OUTSIDE) */}
+    <button
+      className="carousel-control-prev recognitions-btn outside-btn left-btn"
+      type="button"
+      data-bs-target="#recognitionsCarousel"
+      data-bs-slide="prev"
+      style={{position:'relative',top:'160px',left:'-120px'}}
+    >
+      <span className="carousel-control-prev-icon"></span>
+    </button>
+
+    <div
+      id="recognitionsCarousel"
+      className="carousel slide"
+      data-bs-ride="false"
+      data-bs-interval="false"
+    >
+      <div className="carousel-inner">
+        {recognitionSlides.map((group, index) => (
+          <div
+            key={index}
+            className={`carousel-item ${index === 0 ? "active" : ""}`}
+          >
+            <div className="row justify-content-center g-4">
+              {group.map((item, idx) => (
+                <div className="col-md-4" key={idx}>
+                  <a
+                    href="/files/lockdown.pdf"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-decoration-none"
+                  >
+                    <div className="card h-100 shadow text-center py-4">
+                      <img
+                        src={item.image}
+                        alt={item.content}
+                        className="mx-auto"
+                        style={{
+                          width: "120px",
+                          height: "120px",
+                          objectFit: "contain",
+                        }}
+                      />
+                      <div className="card-body">
+                        <h5 className="card-title">{item.content}</h5>
+                      </div>
+                    </div>
+                  </a>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    {/* ▶ RIGHT BUTTON (OUTSIDE) */}
+    <button
+      className="carousel-control-next recognitions-btn outside-btn right-btn"
+      type="button"
+      data-bs-target="#recognitionsCarousel"
+      data-bs-slide="next"
+      style={{position:'absolute',top:'160px',right:'-100px'}}
+    >
+      <span className="carousel-control-next-icon"></span>
+    </button>
+  </div>
+</section>
+
+
   {/* <section className="testimonials py-5">
   <h3 className="text-center" style={{ color: "#7f1d1d" }}>Testimonials</h3>
 
@@ -346,3 +434,6 @@ const recoginitions = [
     
   );
 }
+
+
+
