@@ -182,21 +182,21 @@ export default function Team() {
       .catch(() => setLoading(false));
   }, []);
 
-  useEffect(() => {
-    fetch("http://localhost:5000/team")
-      .then((res) => res.json())
-      .then((data) => {
-        const decryptedMembers = data.map((m) => ({
-          id: m.id,
-          category: m.category,
-          name: decryptText(m.name, m.iv),
-          role: m.role ? decryptText(m.role, m.iv) : "",
-          year: m.year ? decryptText(m.year, m.iv) : "",
-          photo: decryptImage(m.image, m.iv),
-        }));
-        setMembers(decryptedMembers);
-      });
-  }, []);
+  // useEffect(() => {
+  //   fetch("http://localhost:5000/team")
+  //     .then((res) => res.json())
+  //     .then((data) => {
+  //       const decryptedMembers = data.map((m) => ({
+  //         id: m.id,
+  //         category: m.category,
+  //         name: decryptText(m.name, m.iv),
+  //         role: m.role ? decryptText(m.role, m.iv) : "",
+  //         year: m.year ? decryptText(m.year, m.iv) : "",
+  //         photo: decryptImage(m.image, m.iv),
+  //       }));
+  //       setMembers(decryptedMembers);
+  //     });
+  // }, []);
 
   const categorized = {
     executive: members.filter((m) => m.category === "executive"),
