@@ -1,80 +1,251 @@
+// // import express from "express";
+// // import cors from "cors";
+// // import multer from "multer";
+// // import crypto from "crypto";
+// // import dotenv from "dotenv";
+// // import { initializeApp } from "firebase/app";
+// // import { getDatabase } from "firebase/database";
+// // import { ref, push, set, get, child } from "firebase/database";
+
+// // dotenv.config();
+
+// // const app = express();
+// // app.use(cors());
+// // app.use(express.json());
+
+// // // --- Firebase config (Realtime Database) ---
+// // const firebaseConfig = {
+// //   apiKey: "AIzaSyADG7pnfwIn7CSQTXGKfC8lhuyGOUjwpIA",
+// //   authDomain: "adminportal-f55de.firebaseapp.com",
+// //   databaseURL: "https://adminportal-f55de-default-rtdb.firebaseio.com",
+// //   projectId: "adminportal-f55de",
+// //   storageBucket: "adminportal-f55de.appspot.com",
+// //   messagingSenderId: "569026204719",
+// //   appId: "1:569026204719:web:b3ab45cb237ec255c662da",
+// //   measurementId: "G-G3XEFJDRBV",
+// // };
+
+// // const firebaseApp = initializeApp(firebaseConfig);
+// // const db = getDatabase(
+// //   firebaseApp,
+// //   "https://adminportal-f55de-default-rtdb.asia-southeast1.firebasedatabase.app"
+// // );
+
+// // // --- Multer setup (store in memory) ---
+// // const upload = multer({ storage: multer.memoryStorage() });
+
+// // // --- AES Secret Key ---
+// // const SECRET_KEY = crypto.createHash("sha256")
+// //   .update("myVeryStrongSecretKey123!")
+// //   .digest();
+
+// // // --- Upload Endpoint ---
+// // app.post("/upload", upload.single("image"), async (req, res) => {
+// //   try {
+// //     const { name, category, role, year } = req.body;
+// //     console.log("Uploading member:", name, category, role, year);
+
+// //     // Basic validation
+// //     if (
+// //       !req.file ||
+// //       !name ||
+// //       !category ||
+// //       ((category === "executive" && !role) ||
+// //         ((category === "students" || category === "web") && !year))
+// //     ) {
+// //       return res.status(400).json({ message: "All fields are required" });
+// //     }
+
+// //     // 1MB file size check
+// //     if (req.file.size > 1 * 1024 * 1024) {
+// //       return res.status(400).json({ message: "File too large. Max 1MB" });
+// //     }
+
+// //     const fileBuffer = req.file.buffer;
+
+// //     // Encrypt image
+// //     const iv = crypto.randomBytes(16);
+// //     const cipher = crypto.createCipheriv("aes-256-cbc", Buffer.from(SECRET_KEY), iv);
+// //     const encryptedImage = Buffer.concat([cipher.update(fileBuffer), cipher.final()]).toString("base64");
+
+// //     // Encrypt text fields
+// //     const encryptText = (text) => {
+// //       const cipher = crypto.createCipheriv("aes-256-cbc", Buffer.from(SECRET_KEY), iv);
+// //       return cipher.update(text, "utf8", "hex") + cipher.final("hex");
+// //     };
+
+// //     const encryptedData = {
+// //       name: encryptText(name),
+// //       category,
+// //       role: role ? encryptText(role) : null,
+// //       year: year ? encryptText(year) : null,
+// //       image: encryptedImage,
+// //       iv: iv.toString("hex"),
+// //       createdAt: new Date().toISOString(),
+// //     };
+
+// //     // Store in Realtime Database
+// //     const categoryRef = ref(db, `teamMembers/${category}/members`);
+// //     const newMemberRef = push(categoryRef);
+// //     await set(newMemberRef, encryptedData);
+
+// //     // Return the newly added member
+// //     res.json({ message: "Member added successfully", member: { id: newMemberRef.key, ...encryptedData } });
+
+// //   } catch (err) {
+// //     console.error("Upload failed:", err);
+// //     res.status(500).json({ message: "Upload failed", error: err.message });
+// //   }
+// // });
+
+// // // --- Update member ---
+// // app.put("/team/:category/:id", upload.single("image"), async (req, res) => {
+// //   try {
+// //     const { category, id } = req.params;
+// //     const { name, role, year } = req.body;
+
+// //     if (!name || !category) return res.status(400).json({ message: "Required fields missing" });
+
+// //     const memberRef = ref(db, `teamMembers/${category}/members/${id}`);
+// //     const snapshot = await get(memberRef);
+// //     if (!snapshot.exists()) return res.status(404).json({ message: "Member not found" });
+
+// //     const existing = snapshot.val();
+// //     const iv = req.file ? crypto.randomBytes(16) : Buffer.from(existing.iv, "hex");
+
+// //     const encryptText = (text) => {
+// //       const cipher = crypto.createCipheriv("aes-256-cbc", Buffer.from(SECRET_KEY), iv);
+// //       return cipher.update(text, "utf8", "hex") + cipher.final("hex");
+// //     };
+
+// //     let encryptedImage = existing.image;
+// //     if (req.file) {
+// //       const fileBuffer = req.file.buffer;
+// //       const cipher = crypto.createCipheriv("aes-256-cbc", Buffer.from(SECRET_KEY), iv);
+// //       encryptedImage = Buffer.concat([cipher.update(fileBuffer), cipher.final()]).toString("base64");
+// //     }
+
+// //     const updatedData = {
+// //       name: encryptText(name),
+// //       category,
+// //       role: role ? encryptText(role) : null,
+// //       year: year ? encryptText(year) : null,
+// //       image: encryptedImage,
+// //       iv: iv.toString("hex"),
+// //       updatedAt: new Date().toISOString(),
+// //     };
+
+// //     await set(memberRef, updatedData);
+// //     res.json({ message: "Member updated successfully", member: { id, ...updatedData } });
+
+// //   } catch (err) {
+// //     console.error("Update failed:", err);
+// //     res.status(500).json({ message: "Update failed", error: err.message });
+// //   }
+// // });
+
+// // // --- Delete member ---
+// // app.delete("/team/:category/:id", async (req, res) => {
+// //   try {
+// //     const { category, id } = req.params;
+// //     const memberRef = ref(db, `teamMembers/${category}/members/${id}`);
+// //     const snapshot = await get(memberRef);
+// //     if (!snapshot.exists()) return res.status(404).json({ message: "Member not found" });
+
+// //     await set(memberRef, null); // Proper deletion
+// //     res.json({ message: "Member deleted successfully", id });
+
+// //   } catch (err) {
+// //     console.error("Delete failed:", err);
+// //     res.status(500).json({ message: "Delete failed", error: err.message });
+// //   }
+// // });
+
+// // // --- Fetch team members ---
+// // app.get("/team", async (req, res) => {
+// //   try {
+// //     const dbRef = ref(db);
+// //     const snapshot = await get(child(dbRef, "teamMembers"));
+// //     if (!snapshot.exists()) return res.json([]);
+
+// //     const data = snapshot.val();
+// //     const membersList = [];
+// //     for (const category in data) {
+// //       const members = data[category].members || {};
+// //       for (const id in members) {
+// //         membersList.push({
+// //           id,
+// //           category,
+// //           name: members[id].name,
+// //           role: members[id].role || null,
+// //           year: members[id].year || null,
+// //           image: members[id].image,
+// //           iv: members[id].iv,
+// //         });
+// //       }
+// //     }
+// //     res.json(membersList);
+
+// //   } catch (err) {
+// //     console.error("Fetch failed:", err);
+// //     res.status(500).json({ message: "Failed to fetch team", error: err.message });
+// //   }
+// // });
+
+// // app.listen(5000, () => console.log("✅ Server running on port 5000"));
+
+
 // import express from "express";
 // import cors from "cors";
 // import multer from "multer";
 // import crypto from "crypto";
 // import dotenv from "dotenv";
 // import { initializeApp } from "firebase/app";
-// import { getDatabase } from "firebase/database";
-// import { ref, push, set, get, child } from "firebase/database";
+// import { getDatabase, ref, push, set, get, child } from "firebase/database";
 
 // dotenv.config();
-
 // const app = express();
-// app.use(cors());
+// app.use(cors({
+//   origin: "*"
+// }));
 // app.use(express.json());
 
-// // --- Firebase config (Realtime Database) ---
 // const firebaseConfig = {
-//   apiKey: "AIzaSyADG7pnfwIn7CSQTXGKfC8lhuyGOUjwpIA",
-//   authDomain: "adminportal-f55de.firebaseapp.com",
-//   databaseURL: "https://adminportal-f55de-default-rtdb.firebaseio.com",
-//   projectId: "adminportal-f55de",
-//   storageBucket: "adminportal-f55de.appspot.com",
-//   messagingSenderId: "569026204719",
-//   appId: "1:569026204719:web:b3ab45cb237ec255c662da",
-//   measurementId: "G-G3XEFJDRBV",
+//   apiKey: process.env.FIREBASE_API_KEY,
+//   authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+//   databaseURL: process.env.FIREBASE_DB_URL,
+//   projectId: process.env.FIREBASE_PROJECT_ID,
+//   storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+//   messagingSenderId: process.env.FIREBASE_MSG_SENDER_ID,
+//   appId: process.env.FIREBASE_APP_ID,
 // };
 
 // const firebaseApp = initializeApp(firebaseConfig);
-// const db = getDatabase(
-//   firebaseApp,
-//   "https://adminportal-f55de-default-rtdb.asia-southeast1.firebasedatabase.app"
-// );
+// const db = getDatabase(firebaseApp);
 
-// // --- Multer setup (store in memory) ---
+
+
 // const upload = multer({ storage: multer.memoryStorage() });
-
-// // --- AES Secret Key ---
 // const SECRET_KEY = crypto.createHash("sha256")
 //   .update("myVeryStrongSecretKey123!")
 //   .digest();
 
-// // --- Upload Endpoint ---
+// // --- Add member ---
 // app.post("/upload", upload.single("image"), async (req, res) => {
 //   try {
 //     const { name, category, role, year } = req.body;
-//     console.log("Uploading member:", name, category, role, year);
+//     if (!req.file || !name || !category) return res.status(400).json({ message: "Required fields missing" });
 
-//     // Basic validation
-//     if (
-//       !req.file ||
-//       !name ||
-//       !category ||
-//       ((category === "executive" && !role) ||
-//         ((category === "students" || category === "web") && !year))
-//     ) {
-//       return res.status(400).json({ message: "All fields are required" });
-//     }
-
-//     // 1MB file size check
-//     if (req.file.size > 1 * 1024 * 1024) {
-//       return res.status(400).json({ message: "File too large. Max 1MB" });
-//     }
-
-//     const fileBuffer = req.file.buffer;
-
-//     // Encrypt image
 //     const iv = crypto.randomBytes(16);
-//     const cipher = crypto.createCipheriv("aes-256-cbc", Buffer.from(SECRET_KEY), iv);
-//     const encryptedImage = Buffer.concat([cipher.update(fileBuffer), cipher.final()]).toString("base64");
-
-//     // Encrypt text fields
 //     const encryptText = (text) => {
-//       const cipher = crypto.createCipheriv("aes-256-cbc", Buffer.from(SECRET_KEY), iv);
+//       const cipher = crypto.createCipheriv("aes-256-cbc", SECRET_KEY, iv);
 //       return cipher.update(text, "utf8", "hex") + cipher.final("hex");
 //     };
 
-//     const encryptedData = {
+//     const cipher = crypto.createCipheriv("aes-256-cbc", SECRET_KEY, iv);
+//     const encryptedImage = Buffer.concat([cipher.update(req.file.buffer), cipher.final()]).toString("base64");
+
+//     const data = {
 //       name: encryptText(name),
 //       category,
 //       role: role ? encryptText(role) : null,
@@ -84,16 +255,12 @@
 //       createdAt: new Date().toISOString(),
 //     };
 
-//     // Store in Realtime Database
 //     const categoryRef = ref(db, `teamMembers/${category}/members`);
 //     const newMemberRef = push(categoryRef);
-//     await set(newMemberRef, encryptedData);
+//     await set(newMemberRef, data);
 
-//     // Return the newly added member
-//     res.json({ message: "Member added successfully", member: { id: newMemberRef.key, ...encryptedData } });
-
+//     res.json({ message: "Member added", member: { id: newMemberRef.key, ...data } });
 //   } catch (err) {
-//     console.error("Upload failed:", err);
 //     res.status(500).json({ message: "Upload failed", error: err.message });
 //   }
 // });
@@ -103,7 +270,6 @@
 //   try {
 //     const { category, id } = req.params;
 //     const { name, role, year } = req.body;
-
 //     if (!name || !category) return res.status(400).json({ message: "Required fields missing" });
 
 //     const memberRef = ref(db, `teamMembers/${category}/members/${id}`);
@@ -114,15 +280,14 @@
 //     const iv = req.file ? crypto.randomBytes(16) : Buffer.from(existing.iv, "hex");
 
 //     const encryptText = (text) => {
-//       const cipher = crypto.createCipheriv("aes-256-cbc", Buffer.from(SECRET_KEY), iv);
+//       const cipher = crypto.createCipheriv("aes-256-cbc", SECRET_KEY, iv);
 //       return cipher.update(text, "utf8", "hex") + cipher.final("hex");
 //     };
 
 //     let encryptedImage = existing.image;
 //     if (req.file) {
-//       const fileBuffer = req.file.buffer;
-//       const cipher = crypto.createCipheriv("aes-256-cbc", Buffer.from(SECRET_KEY), iv);
-//       encryptedImage = Buffer.concat([cipher.update(fileBuffer), cipher.final()]).toString("base64");
+//       const cipher = crypto.createCipheriv("aes-256-cbc", SECRET_KEY, iv);
+//       encryptedImage = Buffer.concat([cipher.update(req.file.buffer), cipher.final()]).toString("base64");
 //     }
 
 //     const updatedData = {
@@ -136,10 +301,8 @@
 //     };
 
 //     await set(memberRef, updatedData);
-//     res.json({ message: "Member updated successfully", member: { id, ...updatedData } });
-
+//     res.json({ message: "Member updated", member: { id, ...updatedData } });
 //   } catch (err) {
-//     console.error("Update failed:", err);
 //     res.status(500).json({ message: "Update failed", error: err.message });
 //   }
 // });
@@ -152,43 +315,29 @@
 //     const snapshot = await get(memberRef);
 //     if (!snapshot.exists()) return res.status(404).json({ message: "Member not found" });
 
-//     await set(memberRef, null); // Proper deletion
-//     res.json({ message: "Member deleted successfully", id });
-
+//     await set(memberRef, null);
+//     res.json({ message: "Member deleted", id });
 //   } catch (err) {
-//     console.error("Delete failed:", err);
 //     res.status(500).json({ message: "Delete failed", error: err.message });
 //   }
 // });
 
-// // --- Fetch team members ---
+// // --- Fetch all members ---
 // app.get("/team", async (req, res) => {
 //   try {
-//     const dbRef = ref(db);
-//     const snapshot = await get(child(dbRef, "teamMembers"));
+//     const snapshot = await get(ref(db, "teamMembers"));
 //     if (!snapshot.exists()) return res.json([]);
-
 //     const data = snapshot.val();
 //     const membersList = [];
 //     for (const category in data) {
 //       const members = data[category].members || {};
 //       for (const id in members) {
-//         membersList.push({
-//           id,
-//           category,
-//           name: members[id].name,
-//           role: members[id].role || null,
-//           year: members[id].year || null,
-//           image: members[id].image,
-//           iv: members[id].iv,
-//         });
+//         membersList.push({ id, category, ...members[id] });
 //       }
 //     }
 //     res.json(membersList);
-
 //   } catch (err) {
-//     console.error("Fetch failed:", err);
-//     res.status(500).json({ message: "Failed to fetch team", error: err.message });
+//     res.status(500).json({ message: "Fetch failed", error: err.message });
 //   }
 // });
 
@@ -200,35 +349,35 @@ import cors from "cors";
 import multer from "multer";
 import crypto from "crypto";
 import dotenv from "dotenv";
-import { initializeApp } from "firebase/app";
-import { getDatabase, ref, push, set, get, child } from "firebase/database";
+import admin from "firebase-admin";
+import serviceAccount from "./serviceAccountKey.json" assert { type: "json" };
 
 dotenv.config();
+
 const app = express();
-app.use(cors({
-  origin: "*"
-}));
+app.use(cors({ origin: "*" }));
 app.use(express.json());
 
-const firebaseConfig = {
-  apiKey: process.env.FIREBASE_API_KEY,
-  authDomain: process.env.FIREBASE_AUTH_DOMAIN,
-  databaseURL: process.env.FIREBASE_DB_URL,
-  projectId: process.env.FIREBASE_PROJECT_ID,
-  storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.FIREBASE_MSG_SENDER_ID,
-  appId: process.env.FIREBASE_APP_ID,
-};
+// --- Initialize Firebase Admin SDK ---
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: "https://adminportal-f55de-default-rtdb.firebaseio.com"
+});
+const db = admin.database();
 
-const firebaseApp = initializeApp(firebaseConfig);
-const db = getDatabase(firebaseApp);
-
-
-
+// --- Multer setup (store in memory) ---
 const upload = multer({ storage: multer.memoryStorage() });
+
+// --- AES Secret Key ---
 const SECRET_KEY = crypto.createHash("sha256")
   .update("myVeryStrongSecretKey123!")
   .digest();
+
+// --- Helper: encrypt text ---
+const encryptText = (text, iv) => {
+  const cipher = crypto.createCipheriv("aes-256-cbc", SECRET_KEY, iv);
+  return cipher.update(text, "utf8", "hex") + cipher.final("hex");
+};
 
 // --- Add member ---
 app.post("/upload", upload.single("image"), async (req, res) => {
@@ -237,30 +386,28 @@ app.post("/upload", upload.single("image"), async (req, res) => {
     if (!req.file || !name || !category) return res.status(400).json({ message: "Required fields missing" });
 
     const iv = crypto.randomBytes(16);
-    const encryptText = (text) => {
-      const cipher = crypto.createCipheriv("aes-256-cbc", SECRET_KEY, iv);
-      return cipher.update(text, "utf8", "hex") + cipher.final("hex");
-    };
-
-    const cipher = crypto.createCipheriv("aes-256-cbc", SECRET_KEY, iv);
-    const encryptedImage = Buffer.concat([cipher.update(req.file.buffer), cipher.final()]).toString("base64");
+    const encryptedImage = Buffer.concat([
+      crypto.createCipheriv("aes-256-cbc", SECRET_KEY, iv).update(req.file.buffer),
+      crypto.createCipheriv("aes-256-cbc", SECRET_KEY, iv).final()
+    ]).toString("base64");
 
     const data = {
-      name: encryptText(name),
+      name: encryptText(name, iv),
       category,
-      role: role ? encryptText(role) : null,
-      year: year ? encryptText(year) : null,
+      role: role ? encryptText(role, iv) : null,
+      year: year ? encryptText(year, iv) : null,
       image: encryptedImage,
       iv: iv.toString("hex"),
-      createdAt: new Date().toISOString(),
+      createdAt: new Date().toISOString()
     };
 
-    const categoryRef = ref(db, `teamMembers/${category}/members`);
-    const newMemberRef = push(categoryRef);
-    await set(newMemberRef, data);
+    const categoryRef = db.ref(`teamMembers/${category}/members`);
+    const newMemberRef = categoryRef.push();
+    await newMemberRef.set(data);
 
     res.json({ message: "Member added", member: { id: newMemberRef.key, ...data } });
   } catch (err) {
+    console.error("Upload failed:", err);
     res.status(500).json({ message: "Upload failed", error: err.message });
   }
 });
@@ -272,37 +419,35 @@ app.put("/team/:category/:id", upload.single("image"), async (req, res) => {
     const { name, role, year } = req.body;
     if (!name || !category) return res.status(400).json({ message: "Required fields missing" });
 
-    const memberRef = ref(db, `teamMembers/${category}/members/${id}`);
-    const snapshot = await get(memberRef);
+    const memberRef = db.ref(`teamMembers/${category}/members/${id}`);
+    const snapshot = await memberRef.once("value");
     if (!snapshot.exists()) return res.status(404).json({ message: "Member not found" });
 
     const existing = snapshot.val();
     const iv = req.file ? crypto.randomBytes(16) : Buffer.from(existing.iv, "hex");
 
-    const encryptText = (text) => {
-      const cipher = crypto.createCipheriv("aes-256-cbc", SECRET_KEY, iv);
-      return cipher.update(text, "utf8", "hex") + cipher.final("hex");
-    };
-
     let encryptedImage = existing.image;
     if (req.file) {
-      const cipher = crypto.createCipheriv("aes-256-cbc", SECRET_KEY, iv);
-      encryptedImage = Buffer.concat([cipher.update(req.file.buffer), cipher.final()]).toString("base64");
+      encryptedImage = Buffer.concat([
+        crypto.createCipheriv("aes-256-cbc", SECRET_KEY, iv).update(req.file.buffer),
+        crypto.createCipheriv("aes-256-cbc", SECRET_KEY, iv).final()
+      ]).toString("base64");
     }
 
     const updatedData = {
-      name: encryptText(name),
+      name: encryptText(name, iv),
       category,
-      role: role ? encryptText(role) : null,
-      year: year ? encryptText(year) : null,
+      role: role ? encryptText(role, iv) : null,
+      year: year ? encryptText(year, iv) : null,
       image: encryptedImage,
       iv: iv.toString("hex"),
-      updatedAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
     };
 
-    await set(memberRef, updatedData);
+    await memberRef.set(updatedData);
     res.json({ message: "Member updated", member: { id, ...updatedData } });
   } catch (err) {
+    console.error("Update failed:", err);
     res.status(500).json({ message: "Update failed", error: err.message });
   }
 });
@@ -311,13 +456,14 @@ app.put("/team/:category/:id", upload.single("image"), async (req, res) => {
 app.delete("/team/:category/:id", async (req, res) => {
   try {
     const { category, id } = req.params;
-    const memberRef = ref(db, `teamMembers/${category}/members/${id}`);
-    const snapshot = await get(memberRef);
+    const memberRef = db.ref(`teamMembers/${category}/members/${id}`);
+    const snapshot = await memberRef.once("value");
     if (!snapshot.exists()) return res.status(404).json({ message: "Member not found" });
 
-    await set(memberRef, null);
+    await memberRef.remove();
     res.json({ message: "Member deleted", id });
   } catch (err) {
+    console.error("Delete failed:", err);
     res.status(500).json({ message: "Delete failed", error: err.message });
   }
 });
@@ -325,18 +471,21 @@ app.delete("/team/:category/:id", async (req, res) => {
 // --- Fetch all members ---
 app.get("/team", async (req, res) => {
   try {
-    const snapshot = await get(ref(db, "teamMembers"));
+    const snapshot = await db.ref("teamMembers").once("value");
     if (!snapshot.exists()) return res.json([]);
     const data = snapshot.val();
     const membersList = [];
+
     for (const category in data) {
       const members = data[category].members || {};
       for (const id in members) {
         membersList.push({ id, category, ...members[id] });
       }
     }
+
     res.json(membersList);
   } catch (err) {
+    console.error("Fetch failed:", err);
     res.status(500).json({ message: "Fetch failed", error: err.message });
   }
 });
