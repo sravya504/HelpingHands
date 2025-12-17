@@ -205,7 +205,9 @@ import { getDatabase, ref, push, set, get, child } from "firebase/database";
 
 dotenv.config();
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: "*"
+}));
 app.use(express.json());
 
 const firebaseConfig = {
