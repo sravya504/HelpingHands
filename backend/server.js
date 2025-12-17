@@ -221,10 +221,8 @@ const firebaseConfig = {
 };
 
 const firebaseApp = initializeApp(firebaseConfig);
-const db = getDatabase(
-  firebaseApp,
-  "https://adminportal-f55de-default-rtdb.asia-southeast1.firebasedatabase.app"
-);
+const db = getDatabase(firebaseApp);
+
 
 
 const upload = multer({ storage: multer.memoryStorage() });
