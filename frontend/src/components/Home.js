@@ -70,7 +70,7 @@ const recoginitions = [
     {
         image:"../images/12a.png",
         content:"12A Registration",
-        file_link:""
+        file_link:"/images/certificateOfRecognisation.jpg"
     }
 ]
    

@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import CryptoJS from "crypto-js";
 
 const SECRET_KEY = "myVeryStrongSecretKey123!";
-
+const API_BASE_URL = "https://helpinghands-backend-xidz.onrender.com";
 const teamCss = `
 .team-container { max-width: 1200px; margin: 40px auto; padding: 32px 24px 48px 24px; background: #f7fafd; border-radius: 18px; box-shadow: 0 4px 32px rgba(25,118,210,0.08);}
 .team-heading { font-size: 2.7rem; text-align: center; margin-bottom: 32px; color: #d21919ff; letter-spacing: 1px; font-weight: 700;}
@@ -165,7 +165,7 @@ export default function Team() {
 
   useEffect(() => {
     setLoading(true);
-    fetch("http://localhost:5000/team")
+    fetch("https://helpinghands-backend-xidz.onrender.com/team")
       .then((res) => res.json())
       .then((data) => {
         const decryptedMembers = data.map((m) => ({
@@ -224,7 +224,7 @@ export default function Team() {
     if (editMember.file) formData.append("image", editMember.file);
 
     fetch(
-      `http://localhost:5000/team/${editMember.category}/${editMember.id}`,
+      `https://helpinghands-backend-xidz.onrender.com/team/${editMember.category}/${editMember.id}`,
       {
         method: "PUT",
         body: formData,
@@ -255,9 +255,12 @@ export default function Team() {
 
   const handleDelete = (member) => {
     if (window.confirm("Are you sure you want to delete this member?")) {
-      fetch(`http://localhost:5000/team/${member.category}/${member.id}`, {
-        method: "DELETE",
-      })
+      fetch(
+        `https://helpinghands-backend-xidz.onrender.com/team/${member.category}/${member.id}`,
+        {
+          method: "DELETE",
+        }
+      )
         .then((res) => res.json())
         .then(() =>
           setMembers((prev) => prev.filter((m) => m.id !== member.id))
