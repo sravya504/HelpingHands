@@ -230,7 +230,7 @@ export default function AdminMemberForm() {
     setLoading(true); // ✅ disable button
 
     try {
-      const res = await fetch("http://localhost:5000/upload", {
+      const res = await fetch("https://helpinghands-backend-xidz.onrender.com/upload", {
         method: "POST",
         body: formData,
       });
