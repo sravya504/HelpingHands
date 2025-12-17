@@ -201,7 +201,7 @@ import crypto from "crypto";
 import dotenv from "dotenv";
 import { initializeApp } from "firebase/app";
 import { getDatabase, ref, push, set, get, child } from "firebase/database";
-import { getDatabase, ref, get } from "firebase/database";
+
 
 dotenv.config();
 const app = express();
