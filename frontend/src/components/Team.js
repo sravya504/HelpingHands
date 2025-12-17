@@ -120,67 +120,136 @@ export default function Team() {
   const navigate = useNavigate();
   const isAdminPage = location.pathname.startsWith("/admin");
 
+  // const decryptText = (encryptedHex, ivHex) => {
+  //   if (!encryptedHex || !ivHex) return "";
+  //   try {
+  //     const key = CryptoJS.SHA256(SECRET_KEY);
+  //     const iv = CryptoJS.enc.Hex.parse(ivHex);
+  //     const decrypted = CryptoJS.AES.decrypt(
+  //       { ciphertext: CryptoJS.enc.Hex.parse(encryptedHex) },
+  //       key,
+  //       { iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7 }
+  //     );
+  //     return decrypted.toString(CryptoJS.enc.Utf8);
+  //   } catch {
+  //     return "";
+  //   }
+  // };
+
+  // const decryptImage = (encryptedBase64, ivHex) => {
+  //   if (!encryptedBase64 || !ivHex) return "";
+  //   try {
+  //     const key = CryptoJS.SHA256(SECRET_KEY);
+  //     const iv = CryptoJS.enc.Hex.parse(ivHex);
+  //     const encryptedWords = CryptoJS.enc.Base64.parse(encryptedBase64);
+  //     const decrypted = CryptoJS.AES.decrypt(
+  //       { ciphertext: encryptedWords },
+  //       key,
+  //       { iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7 }
+  //     );
+  //     const typedArray = Uint8Array.from(
+  //       decrypted.words.flatMap((w) => [
+  //         (w >> 24) & 0xff,
+  //         (w >> 16) & 0xff,
+  //         (w >> 8) & 0xff,
+  //         w & 0xff,
+  //       ])
+  //     ).slice(0, decrypted.sigBytes);
+  //     let binary = "";
+  //     typedArray.forEach((b) => (binary += String.fromCharCode(b)));
+  //     return `data:image/jpeg;base64,${btoa(binary)}`;
+  //   } catch {
+  //     return "";
+  //   }
+  // };
   const decryptText = (encryptedHex, ivHex) => {
-    if (!encryptedHex || !ivHex) return "";
-    try {
-      const key = CryptoJS.SHA256(SECRET_KEY);
-      const iv = CryptoJS.enc.Hex.parse(ivHex);
-      const decrypted = CryptoJS.AES.decrypt(
-        { ciphertext: CryptoJS.enc.Hex.parse(encryptedHex) },
-        key,
-        { iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7 }
-      );
-      return decrypted.toString(CryptoJS.enc.Utf8);
-    } catch {
-      return "";
-    }
-  };
+  if (!encryptedHex || !ivHex) return "";
+  try {
+    const key = CryptoJS.SHA256(SECRET_KEY);
+    const iv = CryptoJS.enc.Hex.parse(ivHex);
+    const decrypted = CryptoJS.AES.decrypt(
+      { ciphertext: CryptoJS.enc.Hex.parse(encryptedHex) },
+      key,
+      { iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7 }
+    );
+    return decrypted.toString(CryptoJS.enc.Utf8) || "";
+  } catch (err) {
+    console.error("Text decryption error:", err);
+    return "";
+  }
+};
 
-  const decryptImage = (encryptedBase64, ivHex) => {
-    if (!encryptedBase64 || !ivHex) return "";
-    try {
-      const key = CryptoJS.SHA256(SECRET_KEY);
-      const iv = CryptoJS.enc.Hex.parse(ivHex);
-      const encryptedWords = CryptoJS.enc.Base64.parse(encryptedBase64);
-      const decrypted = CryptoJS.AES.decrypt(
-        { ciphertext: encryptedWords },
-        key,
-        { iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7 }
-      );
-      const typedArray = Uint8Array.from(
-        decrypted.words.flatMap((w) => [
-          (w >> 24) & 0xff,
-          (w >> 16) & 0xff,
-          (w >> 8) & 0xff,
-          w & 0xff,
-        ])
-      ).slice(0, decrypted.sigBytes);
-      let binary = "";
-      typedArray.forEach((b) => (binary += String.fromCharCode(b)));
-      return `data:image/jpeg;base64,${btoa(binary)}`;
-    } catch {
-      return "";
-    }
-  };
+const decryptImage = (encryptedBase64, ivHex) => {
+  if (!encryptedBase64 || !ivHex) return "";
+  try {
+    const key = CryptoJS.SHA256(SECRET_KEY);
+    const iv = CryptoJS.enc.Hex.parse(ivHex);
+    const encryptedWords = CryptoJS.enc.Base64.parse(encryptedBase64);
+    const decrypted = CryptoJS.AES.decrypt(
+      { ciphertext: encryptedWords },
+      key,
+      { iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7 }
+    );
+    const typedArray = Uint8Array.from(
+      decrypted.words.flatMap((w) => [
+        (w >> 24) & 0xff,
+        (w >> 16) & 0xff,
+        (w >> 8) & 0xff,
+        w & 0xff,
+      ])
+    ).slice(0, decrypted.sigBytes);
+    let binary = "";
+    typedArray.forEach((b) => (binary += String.fromCharCode(b)));
+    return `data:image/jpeg;base64,${btoa(binary)}`;
+  } catch (err) {
+    console.error("Image decryption error:", err);
+    return "";
+  }
+};
 
+
+  // useEffect(() => {
+  //   setLoading(true);
+  //   fetch("https://helpinghands-backend-xidz.onrender.com/team")
+  //     .then((res) => res.json())
+  //     .then((data) => {
+  //       const decryptedMembers = data.map((m) => ({
+  //         id: m.id,
+  //         category: m.category,
+  //         name: decryptText(m.name, m.iv),
+  //         role: m.role ? decryptText(m.role, m.iv) : "",
+  //         year: m.year ? decryptText(m.year, m.iv) : "",
+  //         photo: decryptImage(m.image, m.iv),
+  //       }));
+  //       setMembers(decryptedMembers);
+  //       setLoading(false);
+  //     })
+  //     .catch(() => setLoading(false));
+  // }, []);
   useEffect(() => {
-    setLoading(true);
-    fetch("https://helpinghands-backend-xidz.onrender.com/team")
-      .then((res) => res.json())
-      .then((data) => {
-        const decryptedMembers = data.map((m) => ({
-          id: m.id,
-          category: m.category,
-          name: decryptText(m.name, m.iv),
-          role: m.role ? decryptText(m.role, m.iv) : "",
-          year: m.year ? decryptText(m.year, m.iv) : "",
-          photo: decryptImage(m.image, m.iv),
-        }));
-        setMembers(decryptedMembers);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
-  }, []);
+  setLoading(true);
+  fetch(`${API_BASE_URL}/team`)
+    .then((res) => res.json())
+    .then((data) => {
+      console.log("Raw backend data:", data); // <-- add this
+      const decryptedMembers = data.map((m) => ({
+        id: m.id,
+        category: m.category || "",
+        name: decryptText(m.name, m.iv),
+        role: m.role ? decryptText(m.role, m.iv) : "",
+        year: m.year ? decryptText(m.year, m.iv) : "",
+        photo: decryptImage(m.image, m.iv),
+      }));
+      console.log("Decrypted members:", decryptedMembers); // <-- and this
+      setMembers(decryptedMembers);
+      setLoading(false);
+    })
+    .catch((err) => {
+      console.error("Fetch error:", err); // <-- to see exact error
+      setLoading(false);
+    });
+}, []);
+
 
   // useEffect(() => {
   //   fetch("http://localhost:5000/team")
