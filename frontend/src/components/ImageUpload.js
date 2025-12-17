@@ -220,23 +220,22 @@ export default function AdminMemberForm() {
       return alert("Please fill all required fields");
     }
 
-    const formData = new FormData();
-    formData.append("image", file);
-    formData.append("name", name);
-    formData.append("category", category);
-    if (category === "executive") formData.append("role", role);
-    else formData.append("year", year);
+   const formData = new FormData();
+formData.append("image", file);       // Must match multer.single("image")
+formData.append("name", name);
+formData.append("category", category);
+if (category === "executive") formData.append("role", role);
+else formData.append("year", year);
+
 
     setLoading(true); // ✅ disable button
 
     try {
-      const res = await fetch(
-        "https://helpinghands-backend-xidz.onrender.com/upload",
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
+     const res = await fetch("https://helpinghands-backend-xidz.onrender.com/upload", {
+  method: "POST",
+  body: formData // send the FormData directly
+});
+
 
       const data = await res.json();
       if (res.ok) {
