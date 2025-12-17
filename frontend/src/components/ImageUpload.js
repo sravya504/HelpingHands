@@ -1,4 +1,3 @@
-
 // import { useState } from "react";
 // import { useNavigate } from "react-router-dom"; // ✅ import
 
@@ -197,7 +196,8 @@ export default function AdminMemberForm() {
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
-      if (selectedFile.size > 1 * 1024 * 1024) { // 1MB limit
+      if (selectedFile.size > 1 * 1024 * 1024) {
+        // 1MB limit
         alert("File too large. Max size is 1MB.");
         e.target.value = null;
         setFile(null);
@@ -214,8 +214,8 @@ export default function AdminMemberForm() {
       !file ||
       !name ||
       !category ||
-      ((category === "executive" && !role) ||
-        ((category === "students" || category === "web") && !year))
+      (category === "executive" && !role) ||
+      ((category === "students" || category === "web") && !year)
     ) {
       return alert("Please fill all required fields");
     }
@@ -230,10 +230,13 @@ export default function AdminMemberForm() {
     setLoading(true); // ✅ disable button
 
     try {
-      const res = await fetch("https://helpinghands-backend-xidz.onrender.com/upload", {
-        method: "POST",
-        body: formData,
-      });
+      const res = await fetch(
+        "https://helpinghands-backend-xidz.onrender.com/upload",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
 
       const data = await res.json();
       if (res.ok) {
@@ -296,7 +299,12 @@ export default function AdminMemberForm() {
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Enter member name"
-          style={{ width: "100%", padding: "8px", borderRadius: "6px", border: "1px solid #ccc" }}
+          style={{
+            width: "100%",
+            padding: "8px",
+            borderRadius: "6px",
+            border: "1px solid #ccc",
+          }}
         />
       </div>
 
@@ -305,7 +313,12 @@ export default function AdminMemberForm() {
         <select
           value={category}
           onChange={(e) => setCategory(e.target.value)}
-          style={{ width: "100%", padding: "8px", borderRadius: "6px", border: "1px solid #ccc" }}
+          style={{
+            width: "100%",
+            padding: "8px",
+            borderRadius: "6px",
+            border: "1px solid #ccc",
+          }}
         >
           {CATEGORIES.map((cat) => (
             <option key={cat.key} value={cat.key}>
@@ -323,7 +336,12 @@ export default function AdminMemberForm() {
             value={role}
             onChange={(e) => setRole(e.target.value)}
             placeholder="Enter member role"
-            style={{ width: "100%", padding: "8px", borderRadius: "6px", border: "1px solid #ccc" }}
+            style={{
+              width: "100%",
+              padding: "8px",
+              borderRadius: "6px",
+              border: "1px solid #ccc",
+            }}
           />
         </div>
       ) : (
@@ -334,7 +352,12 @@ export default function AdminMemberForm() {
             value={year}
             onChange={(e) => setYear(e.target.value)}
             placeholder="Enter year (e.g. 2nd Year)"
-            style={{ width: "100%", padding: "8px", borderRadius: "6px", border: "1px solid #ccc" }}
+            style={{
+              width: "100%",
+              padding: "8px",
+              borderRadius: "6px",
+              border: "1px solid #ccc",
+            }}
           />
         </div>
       )}
@@ -368,4 +391,3 @@ export default function AdminMemberForm() {
     </form>
   );
 }
-
