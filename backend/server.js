@@ -368,7 +368,5 @@ app.get("/team", async (req, res) => {
 });
 
 
-const snapshot = await get(ref(db, "teamMembers"));
-console.log(snapshot.val());
 
 app.listen(5000, () => console.log("✅ Server running on port 5000"));
