@@ -194,7 +194,6 @@
 
 // app.listen(5000, () => console.log("✅ Server running on port 5000"));
 
-
 import express from "express";
 import cors from "cors";
 import multer from "multer";
@@ -205,9 +204,11 @@ import { getDatabase, ref, push, set, get, child } from "firebase/database";
 
 dotenv.config();
 const app = express();
-app.use(cors({
-  origin: "*"
-}));
+app.use(
+  cors({
+    origin: "*",
+  })
+);
 app.use(express.json());
 
 const firebaseConfig = {
@@ -223,10 +224,9 @@ const firebaseConfig = {
 const firebaseApp = initializeApp(firebaseConfig);
 const db = getDatabase(firebaseApp);
 
-
-
 const upload = multer({ storage: multer.memoryStorage() });
-const SECRET_KEY = crypto.createHash("sha256")
+const SECRET_KEY = crypto
+  .createHash("sha256")
   .update("myVeryStrongSecretKey123!")
   .digest();
 
@@ -234,7 +234,8 @@ const SECRET_KEY = crypto.createHash("sha256")
 app.post("/upload", upload.single("image"), async (req, res) => {
   try {
     const { name, category, role, year } = req.body;
-    if (!req.file || !name || !category) return res.status(400).json({ message: "Required fields missing" });
+    if (!req.file || !name || !category)
+      return res.status(400).json({ message: "Required fields missing" });
 
     const iv = crypto.randomBytes(16);
     const encryptText = (text) => {
@@ -243,7 +244,10 @@ app.post("/upload", upload.single("image"), async (req, res) => {
     };
 
     const cipher = crypto.createCipheriv("aes-256-cbc", SECRET_KEY, iv);
-    const encryptedImage = Buffer.concat([cipher.update(req.file.buffer), cipher.final()]).toString("base64");
+    const encryptedImage = Buffer.concat([
+      cipher.update(req.file.buffer),
+      cipher.final(),
+    ]).toString("base64");
 
     const data = {
       name: encryptText(name),
@@ -259,7 +263,10 @@ app.post("/upload", upload.single("image"), async (req, res) => {
     const newMemberRef = push(categoryRef);
     await set(newMemberRef, data);
 
-    res.json({ message: "Member added", member: { id: newMemberRef.key, ...data } });
+    res.json({
+      message: "Member added",
+      member: { id: newMemberRef.key, ...data },
+    });
   } catch (err) {
     res.status(500).json({ message: "Upload failed", error: err.message });
   }
@@ -270,14 +277,18 @@ app.put("/team/:category/:id", upload.single("image"), async (req, res) => {
   try {
     const { category, id } = req.params;
     const { name, role, year } = req.body;
-    if (!name || !category) return res.status(400).json({ message: "Required fields missing" });
+    if (!name || !category)
+      return res.status(400).json({ message: "Required fields missing" });
 
     const memberRef = ref(db, `teamMembers/${category}/members/${id}`);
     const snapshot = await get(memberRef);
-    if (!snapshot.exists()) return res.status(404).json({ message: "Member not found" });
+    if (!snapshot.exists())
+      return res.status(404).json({ message: "Member not found" });
 
     const existing = snapshot.val();
-    const iv = req.file ? crypto.randomBytes(16) : Buffer.from(existing.iv, "hex");
+    const iv = req.file
+      ? crypto.randomBytes(16)
+      : Buffer.from(existing.iv, "hex");
 
     const encryptText = (text) => {
       const cipher = crypto.createCipheriv("aes-256-cbc", SECRET_KEY, iv);
@@ -287,7 +298,10 @@ app.put("/team/:category/:id", upload.single("image"), async (req, res) => {
     let encryptedImage = existing.image;
     if (req.file) {
       const cipher = crypto.createCipheriv("aes-256-cbc", SECRET_KEY, iv);
-      encryptedImage = Buffer.concat([cipher.update(req.file.buffer), cipher.final()]).toString("base64");
+      encryptedImage = Buffer.concat([
+        cipher.update(req.file.buffer),
+        cipher.final(),
+      ]).toString("base64");
     }
 
     const updatedData = {
@@ -313,7 +327,8 @@ app.delete("/team/:category/:id", async (req, res) => {
     const { category, id } = req.params;
     const memberRef = ref(db, `teamMembers/${category}/members/${id}`);
     const snapshot = await get(memberRef);
-    if (!snapshot.exists()) return res.status(404).json({ message: "Member not found" });
+    if (!snapshot.exists())
+      return res.status(404).json({ message: "Member not found" });
 
     await set(memberRef, null);
     res.json({ message: "Member deleted", id });
@@ -330,9 +345,18 @@ app.get("/team", async (req, res) => {
     const data = snapshot.val();
     const membersList = [];
     for (const category in data) {
-      const members = data[category].members || {};
-      for (const id in members) {
-        membersList.push({ id, category, ...members[id] });
+      // const members = data[category].members || {};
+      // for (const id in members) {
+      //   membersList.push({ id, category, ...members[id] });
+      // }
+      const members = data[category]?.members;
+      if (members) {
+        for (const id in members) {
+          if (members[id] && members[id].name && members[id].iv) {
+            // only include valid records
+            membersList.push({ id, category, ...members[id] });
+          }
+        }
       }
     }
     res.json(membersList);
