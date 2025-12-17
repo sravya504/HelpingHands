@@ -201,6 +201,7 @@ import crypto from "crypto";
 import dotenv from "dotenv";
 import { initializeApp } from "firebase/app";
 import { getDatabase, ref, push, set, get, child } from "firebase/database";
+import { getDatabase, ref, get } from "firebase/database";
 
 dotenv.config();
 const app = express();
@@ -363,6 +364,11 @@ app.get("/team", async (req, res) => {
   } catch (err) {
     res.status(500).json({ message: "Fetch failed", error: err.message });
   }
+
 });
+
+
+const snapshot = await get(ref(db, "teamMembers"));
+console.log(snapshot.val());
 
 app.listen(5000, () => console.log("✅ Server running on port 5000"));
